@@ -1,0 +1,32 @@
+The Parasites QuickStack v1.0.0
+Third-party notices
+
+UE4SS / RE-UE4SS
+----------------
+This package includes UE4SS components required to load the Lua mod:
+
+  COPY_TO_GAME_WIN64\dwmapi.dll
+  COPY_TO_GAME_WIN64\ue4ss\UE4SS.dll
+  COPY_TO_GAME_WIN64\ue4ss\Mods\Keybinds
+
+UE4SS is distributed under the MIT License.
+
+Copyright (c) 2022 Narknon
+
+The UE4SS license text is included here:
+
+  licenses\UE4SS-MIT-LICENSE.txt
+  COPY_TO_GAME_WIN64\ue4ss\LICENSE
+
+The Parasites
+-------------
+The Parasites and related names, assets, code, and trademarks belong to their
+respective owners.
+
+This mod is unofficial and is not affiliated with, endorsed by, sponsored by, or
+approved by the developer, publisher, or rightsholder of The Parasites.
+
+Unreal Engine
+-------------
+Unreal Engine and related trademarks belong to Epic Games, Inc.
+

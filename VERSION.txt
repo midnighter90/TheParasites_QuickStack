@@ -1,0 +1,11 @@
+The Parasites QuickStack v1.0.0
+
+Release date: 2026-05-24
+Prepared for: The Parasites TP_Alpha_v_0.1.5.0.0
+Platform: Windows
+Loader: UE4SS included
+Hotkey: Ctrl+F9
+
+This package is provided as-is, without warranty, support obligation, or future
+update guarantee. See COPYRIGHT_AND_TERMS.txt.
+

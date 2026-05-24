@@ -1,0 +1,14 @@
+# Local release/runtime leftovers
+backups/
+last_backup.txt
+*.log
+QuickStack.log
+TheParasitesQuickStack.log
+
+# Windows noise
+Thumbs.db
+Desktop.ini
+
+# Temporary folders
+_verify_extract_*/
+
