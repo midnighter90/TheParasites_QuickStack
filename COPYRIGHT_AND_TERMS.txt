@@ -1,5 +1,5 @@
 The Parasites QuickStack v1.0.0
-Copyright, license terms, and disclaimer
+Copyright, source availability, license terms, and disclaimer
 
 Copyright
 ---------
@@ -10,9 +10,26 @@ These terms apply to the original QuickStack mod code, installer scripts,
 documentation, package layout, and release package, except for third-party
 components that are distributed under their own licenses.
 
+Source availability
+-------------------
+The source code is made available for inspection, personal non-commercial use,
+and personal non-commercial modification.
+
+Because these terms prohibit commercial use and hosting on other websites, this
+is a custom restricted source-available license and is not an OSI-approved
+open-source license.
+
 Allowed use
 -----------
-You may download, install, and use this mod for personal, non-commercial use.
+You may:
+
+  - Download, install, and use this mod for personal, non-commercial use.
+  - View and inspect the source code.
+  - Modify the source code for your own personal, non-commercial use.
+  - Keep local or private backup copies for your own personal, non-commercial
+    use.
+
+All allowed use is personal and non-commercial only.
 
 Prohibited use
 --------------
@@ -24,14 +41,20 @@ copyright holder:
   - Repost this mod.
   - Redistribute this mod.
   - Repackage this mod.
-  - Host this mod on another website, file host, launcher, mod manager, or
-    repository.
+  - Publish or distribute modified versions of this mod.
+  - Host this mod, its source code, release archives, forks, mirrors, modified
+    versions, or derivative packages on another website, file host, launcher,
+    mod manager, package registry, repository hosting service, or repository
+    outside the official repository controlled by the copyright holder.
   - Sell this mod.
   - Put this mod behind a paywall.
   - Bundle this mod with paid content.
-  - Use this mod for commercial distribution.
-  - Charge money, points, credits, subscriptions, donations, or any other form
-    of payment for access to this mod.
+  - Use this mod, its source code, modified versions, derivative packages, or
+    any related material for commercial, monetized, promotional, enterprise,
+    business, paid, revenue-generating, or for-profit purposes.
+  - Charge money, points, credits, subscriptions, donations, advertising views,
+    or any other form of payment or compensation for access to this mod, its
+    source code, modified versions, derivative packages, or related material.
 
 No support
 ----------

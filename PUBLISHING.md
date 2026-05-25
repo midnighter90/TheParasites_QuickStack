@@ -10,15 +10,22 @@ TheParasites_QuickStack
 
 ## Important License Note
 
-This mod is not open source.
+The source code is made available under a custom restricted source-available
+license.
 
-When creating the GitHub repository, do not select an open-source license
-template. The custom terms are already included in:
+When creating the GitHub repository, do not select a standard open-source
+license template. The custom terms are already included in:
 
 ```text
 LICENSE.md
 COPYRIGHT_AND_TERMS.txt
 ```
+
+The license prohibits commercial use and hosting this mod, its source code,
+release archives, forks, mirrors, modified versions, or derivative packages on
+another website, file host, launcher, mod manager, package registry, repository
+hosting service, or repository outside the official repository controlled by the
+copyright holder.
 
 Third-party components remain under their own licenses. See:
 

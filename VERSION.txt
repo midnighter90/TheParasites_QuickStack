@@ -9,3 +9,7 @@ Hotkey: Ctrl+F9
 This package is provided as-is, without warranty, support obligation, or future
 update guarantee. See COPYRIGHT_AND_TERMS.txt.
 
+Source code is available for inspection and personal non-commercial
+modification only. Rehosting on other websites and all commercial use are
+prohibited.
+

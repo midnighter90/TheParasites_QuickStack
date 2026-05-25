@@ -41,14 +41,17 @@ No compatibility is promised for other game versions.
 
 ## Terms
 
+Source code is available for inspection, personal non-commercial use, and
+personal non-commercial modification.
+
 Personal, non-commercial use only.
 
 No warranty. No support obligation. No future update guarantee. Use at your own
 risk.
 
 Reuploading, mirroring, reposting, redistribution, repackaging, paid
-distribution, and commercial use are prohibited without explicit written
-permission from the copyright holder.
+distribution, publishing modified versions, hosting this mod or its source code
+on other websites, and all commercial use are prohibited without explicit
+written permission from the copyright holder.
 
 See `LICENSE.md` and `COPYRIGHT_AND_TERMS.txt`.
-
