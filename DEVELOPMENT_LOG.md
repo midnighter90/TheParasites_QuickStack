@@ -1,83 +1,83 @@
 # Development Log - The Parasites QuickStack
 
-Stand: 2026-05-25
+Date: 2026-05-25
 
-Diese Datei dokumentiert die relevanten Schritte, mit denen QuickStack
-entwickelt, getestet, verpackt und fuer die Veroeffentlichung vorbereitet
-wurde.
+This document records the relevant work used to develop, test, package, and
+prepare QuickStack for publication. It intentionally avoids private names,
+private paths, account identifiers, and machine-specific locations.
 
-## Ausgangspunkt
+## Starting Point
 
-QuickStack entstand als UE4SS/Lua-Mod fuer The Parasites
-`TP_Alpha_v_0.1.5.0.0`. Das Ziel war ein Hotkey, der Inventarstacks in einen
-geoeffneten Container verschiebt, wenn dieser Container denselben Itemtyp
-bereits enthaelt.
+QuickStack was created as a UE4SS/Lua mod for The Parasites
+`TP_Alpha_v_0.1.5.0.0`. The goal was a hotkey that moves inventory stacks into
+an open container when that container already contains the same item type.
 
-Gewuenschter Nutzerablauf:
+Expected user flow:
 
-1. Container oeffnen.
-2. `Ctrl+F9` druecken.
-3. Nur passende Stacks wandern in den Container.
-4. unpassende Items, Ausruestung, Waffen und Spezialslots bleiben unberuehrt.
+1. Open a container.
+2. Press `Ctrl+F9`.
+3. Only matching stacks move into the container.
+4. Non-matching items, equipment, weapons, and dedicated slots remain untouched.
 
-## Recherche
+## Research
 
-1. UE4SS als technische Basis gewaehlt.
-   - Lua-Mod statt Save-Editor, weil das Feature im laufenden UI/Inventar
-     passieren muss.
-   - UE4SS Runtime wurde in das Release-Paket aufgenommen.
+1. UE4SS was selected as the technical base.
+   - A Lua mod was used instead of a save editor because the feature needs to
+     operate while the UI and inventory are active.
+   - The UE4SS runtime was included in the release package.
 
-2. UI- und Containerklassen untersucht.
-   - relevante Widget-/Containerklasse:
+2. UI and container classes were investigated.
+   - Relevant widget/container class:
      - `JSIContainer_C`
-   - relevante Multiplayer-/Inventory-Komponente:
+   - Relevant multiplayer/inventory component:
      - `BP_JigMultiplayer_C`
-   - Ziel war, geoeffnete Container und Spielerinventar sicher zu unterscheiden.
+   - The goal was to distinguish open storage containers from the player
+     inventory and internal helper containers.
 
-3. Container-Metadaten gesucht.
-   - Container-ID.
-   - Parent-ID.
-   - Grid-Groesse.
-   - zugehoerige Multiplayer-Komponente.
-   - Slot-/Equipment-Container.
+3. Container metadata was investigated.
+   - Container ID.
+   - Parent ID.
+   - Grid size.
+   - Related multiplayer component.
+   - Slot and equipment containers.
 
-4. UE4SS-Property-Zugriff erweitert.
-   - Custom Properties fuer primitive Containerwerte registriert.
-   - Fallbacks fuer alternative Property-Namen eingebaut.
-   - robuste Hilfsfunktionen fuer:
+4. UE4SS property access was extended.
+   - Custom properties were registered for primitive container values.
+   - Fallbacks were added for alternate property names.
+   - Robust helper functions were added for:
      - `GetPropertyValue`.
-     - direktes Indexing.
-     - `TArray`-Zugriff.
-     - Null-Objekt-Erkennung.
-     - Adress-/Objektvergleich.
+     - direct indexing.
+     - `TArray` access.
+     - null-object detection.
+     - address and object comparison.
 
-## Trial and Error
+## Trial And Error
 
-QuickStack benoetigte mehrere Testphasen, weil Inventar- und UI-Objekte im
-laufenden Spiel schwer direkt zu erkennen sind.
+QuickStack required several test phases because inventory and UI objects are
+hard to identify directly while the game is running.
 
-1. Rohes Container-Probing.
-   - `FindAllOf("JSIContainer_C")` wurde genutzt.
-   - Containerkandidaten wurden geloggt.
-   - Ziel war, sichtbare Container vom Spielerinventar und unsichtbaren
-     Hilfscontainern zu trennen.
+1. Raw container probing.
+   - `FindAllOf("JSIContainer_C")` was used.
+   - Container candidates were logged.
+   - The goal was to separate visible storage containers from the player
+     inventory and invisible helper containers.
 
-2. Dry-run- und Candidate-Scans.
-   - Es wurden Suchlaeufe ohne Itembewegung eingebaut.
-   - Diese gaben Containergruppen, Slots und moegliche Matching Items aus.
-   - Riskante Struct-Reads wurden nach einem Crashpfad deaktiviert.
+2. Dry-run and candidate scans.
+   - Search passes without item movement were added.
+   - These scans printed container groups, slots, and possible matching items.
+   - Risky struct reads were disabled after a crash path was identified.
 
-3. Empty-slot- und Slot-Probes.
-   - Getestet wurde, welche Slots tatsaechlich Itemdaten tragen.
-   - Leere und unbrauchbare Slots wurden herausgefiltert.
+3. Empty-slot and slot probes.
+   - Tests checked which slots actually held item data.
+   - Empty and unusable slots were filtered out.
 
-4. Single-move-Tests.
-   - Zunaechst durfte nur ein Stack bewegt werden.
-   - Dadurch wurde die korrekte Server-/Client-Sequenz gesucht, ohne bei Fehlern
-     massenhaft Items zu bewegen.
+4. Single-move tests.
+   - Early tests allowed only one stack to move.
+   - This made it possible to find the correct server/client sequence without
+     moving many items during failed attempts.
 
-5. Die funktionierende Move-Sequenz.
-   - Der stabile Ablauf wurde:
+5. Working move sequence.
+   - The stable sequence was:
 
 ```text
 SERVER_RequestMoveItemToAnotherComp
@@ -85,64 +85,63 @@ RemoveInventoryItemByRef
 CLIENT_ItemRemoved
 ```
 
-   - Nur der Server-Request allein war nicht genug.
-   - Die lokale Quellinventar-Bereinigung war notwendig, damit UI/Clientzustand
-     nachvollziehbar bleibt.
+   - The server request alone was not enough.
+   - Local source-inventory cleanup was needed so the UI and client state stayed
+     consistent.
 
-6. Mehrfachbewegung mit Delay.
-   - Direktes massenhaftes Verschieben in einer engen Schleife wurde verworfen.
-   - Der finale Full-QuickStack verschiebt Schritt fuer Schritt.
-   - Zwischen Moves liegt ein Delay, damit Spiel und UI Zeit zum Aktualisieren
-     haben.
+6. Multi-item movement with delay.
+   - Moving many items in a tight loop was discarded.
+   - The final full QuickStack run moves one item at a time.
+   - A delay between moves gives the game and UI time to update.
 
-7. Zielcontainer-Anker.
-   - Der Zielcontainer wird beim Start des QuickStack-Runs festgehalten.
-   - Folgebewegungen suchen denselben Container anhand Adresse, Container-ID und
-     Multiplayer-Komponente erneut.
-   - Dadurch wird reduziert, dass der Lauf mitten im Prozess in den falschen
-     Container kippt.
+7. Target-container anchor.
+   - The target container is captured when a QuickStack run starts.
+   - Follow-up moves re-find the same container by address, container ID, and
+     multiplayer component.
+   - This reduces the risk of a run switching to the wrong container while it is
+     still in progress.
 
-8. Debug-Hotkeys fuer Public deaktiviert.
-   - Probe-/Debugfunktionen blieben im Code zur Wartung erhalten.
-   - Public Runtime nutzt aber nur `Ctrl+F9`.
+8. Public debug hotkeys disabled.
+   - Probe and debug functions remain in the code for maintenance.
+   - The public runtime exposes only `Ctrl+F9`.
    - `QUICKSTACK_DEBUG_MODE = false`.
 
-## Finaler Code
+## Final Code
 
-Der finale Mod-Code liegt in:
+The final mod code is located at:
 
 ```text
 COPY_TO_GAME_WIN64/ue4ss/Mods/TheParasitesQuickStack/scripts/main.lua
 ```
 
-Wichtige Bestandteile:
+Important pieces:
 
-- Hotkey `Ctrl+F9`.
-- Container-/Inventar-Erkennung.
-- Gruppierung sichtbarer Container.
-- Matching nach Itemtypen, die bereits im Zielcontainer existieren.
-- Skip-Logik fuer:
-  - ausgeruestete Waffen.
-  - Tools.
-  - Waffenattachments.
-  - Equipment- und Spezialslots.
-  - nicht passende Itemtypen.
-- server-first Move-Sequenz.
-- Schrittweises Full-QuickStack mit Delay.
-- Zielcontainer-Anker.
-- Cooldown gegen Doppeltrigger.
-- Move-Limit als Sicherheit.
-- Logdatei neben dem installierten Mod:
+- `Ctrl+F9` hotkey.
+- Container and inventory detection.
+- Visible-container grouping.
+- Matching by item types that already exist in the target container.
+- Skip logic for:
+  - equipped weapons.
+  - tools.
+  - weapon attachments.
+  - equipment and dedicated slots.
+  - non-matching item types.
+- Server-first move sequence.
+- Step-by-step full QuickStack with delay.
+- Target-container anchor.
+- Cooldown against repeated triggers.
+- Move limit for safety.
+- Log file next to the installed mod:
 
 ```text
 ue4ss/Mods/TheParasitesQuickStack/QuickStack.log
 ```
 
-## Installer und Paket
+## Installer And Package
 
-QuickStack wurde als komplettes portables UE4SS-Paket gebaut.
+QuickStack was built as a complete portable UE4SS package.
 
-Release-Struktur:
+Release structure:
 
 ```text
 COPY_TO_GAME_WIN64/
@@ -152,35 +151,30 @@ scripts/Install_QuickStack.ps1
 scripts/Uninstall_QuickStack.ps1
 ```
 
-Installer-Verhalten:
+Installer behavior:
 
-- fragt den The-Parasites-`Win64`-Ordner ab.
-- akzeptiert alternativ `-GameWin64 "<path>"`.
-- prueft, dass `TheParasites-Win64-Shipping.exe` vorhanden ist.
-- blockiert Installation, wenn The Parasites laeuft.
-- sichert vorhandene `dwmapi.dll`/`ue4ss`-Installationen.
-- schreibt `last_backup.txt`.
-- kopiert den UE4SS-Payload.
-- schreibt einen Marker, damit die eigene Installation wieder erkannt wird.
+- asks for the The Parasites `Win64` folder.
+- accepts `-GameWin64 "<path>"` as an alternative.
+- verifies that `TheParasites-Win64-Shipping.exe` is present.
+- blocks installation while The Parasites is running.
+- backs up existing `dwmapi.dll` and `ue4ss` installations.
+- writes `last_backup.txt`.
+- copies the UE4SS payload.
+- writes a marker so its own installation can be recognized later.
 
-Uninstaller-Verhalten:
+Uninstaller behavior:
 
-- entfernt die installierten QuickStack-Dateien.
-- arbeitet mit dem Marker, um nicht blind fremde Installationen zu zerstoeren.
-- dokumentiert manuelles Vorgehen fuer bestehende UE4SS-Setups.
+- removes the installed QuickStack files.
+- uses the marker to avoid blindly removing unrelated installations.
+- documents the manual process for existing UE4SS setups.
 
-## Dokumentation und Repository-Aufbau
+## Documentation And Repository Layout
 
-Das oeffentliche GitHub-Repository wurde aus dem lokalen Arbeitsprojekt als
-bereinigte Staging-Kopie aufgebaut.
+The public repository was prepared from a cleaned release-staging copy. Private
+development-only notes, private machine paths, and account-specific references
+are not part of the published package.
 
-Repository:
-
-```text
-https://github.com/midnighter90/TheParasites_QuickStack
-```
-
-Oeffentliche Dateien:
+Public files:
 
 - `README.md`
 - `README_INSTALLATION.txt`
@@ -197,73 +191,71 @@ Oeffentliche Dateien:
 - `.gitattributes`
 - `.gitignore`
 
-Nach dem ersten Upload wurde das Paket public-sicher bereinigt:
+After the initial upload, the package was cleaned for public release:
 
-- keine persoenlichen Windows-Pfade in oeffentlichen Textdateien.
-- kein lokaler Paket-/Source-Pfad im Installer-Marker.
-- Installer verlangt den Game-`Win64`-Ordner oder den Parameter `-GameWin64`.
-- Debug-/Probe-Hotkeys sind nicht Teil der Public-Bedienung.
+- no private Windows paths in public text files.
+- no local package or source path in the installer marker.
+- the installer asks for the game `Win64` folder or accepts `-GameWin64`.
+- debug and probe hotkeys are not part of the public user flow.
 
-## Lizenz- und Copyright-Arbeit
+## License And Copyright Work
 
-Die Terms wurden bewusst restriktiv gehalten:
+The terms were intentionally kept restrictive:
 
-- persoenliche, nicht-kommerzielle Nutzung.
-- kein Reuploading.
-- kein Mirroring.
-- kein Reposting.
-- kein Repackaging.
-- keine bezahlte Distribution.
-- keine kommerzielle Nutzung.
-- keine Garantie.
-- kein Supportversprechen.
-- keine Zukunftskompatibilitaet.
+- personal, non-commercial use.
+- no reuploading.
+- no mirroring.
+- no reposting.
+- no repackaging.
+- no paid distribution.
+- no commercial use.
+- no warranty.
+- no support promise.
+- no future compatibility guarantee.
 
-UE4SS/RE-UE4SS bleibt unter MIT-Lizenz und wird in den Third-Party Notices mit
-Lizenzdatei aufgefuehrt.
+UE4SS/RE-UE4SS remains under the MIT License and is listed in the third-party
+notices with its license file.
 
-## GitHub-/Release-Arbeit
+## GitHub And Release Work
 
-Durchgefuehrte Schritte:
+Completed steps:
 
-1. lokales Arbeitsprojekt aufgebaut.
-2. UE4SS-Payload zusammengestellt.
-3. Lua-Mod in `TheParasitesQuickStack` erstellt.
-4. Debug-/Probephase durchlaufen.
-5. finalen `Ctrl+F9`-Workflow stabilisiert.
-6. Installer und Uninstaller gebaut.
-7. oeffentliche Staging-Repo-Kopie erzeugt.
-8. persoenliche Pfade und lokale Notizen aus dem Public-Paket entfernt.
-9. Manifest erzeugt.
-10. Release-ZIP gebaut.
-11. ZIP entpackt und Manifest geprueft.
-12. `main`, `v1.0.0` und Release-Asset auf GitHub bereitgestellt.
+1. Built the development workspace.
+2. Assembled the UE4SS payload.
+3. Created the Lua mod in `TheParasitesQuickStack`.
+4. Ran the debug and probe phase.
+5. Stabilized the final `Ctrl+F9` workflow.
+6. Built the installer and uninstaller.
+7. Created a cleaned public release copy.
+8. Removed private paths and development-only notes from the public package.
+9. Generated the manifest.
+10. Built the release ZIP.
+11. Extracted the ZIP and verified it against the manifest.
+12. Published `main`, `v1.0.0`, and the release asset.
 
-## Verifikation
+## Verification
 
-Durchgefuehrt wurden u.a.:
+Verification included:
 
-- PowerShell-Syntaxcheck fuer Installer/Uninstaller.
-- manuelle/spielnahe QuickStack-Tests mit geoeffnetem Container.
-- Single-move-Tests.
-- Full-QuickStack-Tests mit Delay.
-- Log-Ausgabe geprueft.
-- Public-Paket auf persoenliche Pfade gescannt.
-- Manifest-Hashes erzeugt und gegen entpacktes ZIP geprueft.
-- GitHub-Remote, `main`, `v1.0.0` und Release-ZIP geprueft.
+- PowerShell syntax checks for installer and uninstaller.
+- manual in-game QuickStack tests with an open container.
+- single-move tests.
+- full QuickStack tests with delay.
+- log-output checks.
+- public-package scans for private paths and account-specific references.
+- manifest-hash generation and validation against the extracted ZIP.
+- repository branch, tag, and release ZIP checks.
 
-## Ergebnis
+## Result
 
-QuickStack ist ein portabler UE4SS-Mod fuer The Parasites. Der finale
-Nutzerablauf ist:
+QuickStack is a portable UE4SS mod for The Parasites. The final user flow is:
 
-1. The Parasites schliessen.
-2. Release-ZIP entpacken.
-3. `Install_QuickStack.cmd` starten.
-4. Spiel starten.
-5. Container oeffnen.
-6. `Ctrl+F9` druecken.
+1. Close The Parasites.
+2. Extract the release ZIP.
+3. Run `Install_QuickStack.cmd`.
+4. Start the game.
+5. Open a container.
+6. Press `Ctrl+F9`.
 
-Das finale Feature bewegt nur passende Stacks, nutzt eine getestete
-Server-/Client-Move-Sequenz und versucht, Ausruestung und unpassende Items
-nicht anzufassen.
+The final feature moves only matching stacks, uses a tested server/client move
+sequence, and tries to avoid touching equipment and non-matching items.
